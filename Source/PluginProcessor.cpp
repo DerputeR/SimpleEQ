@@ -191,10 +191,33 @@ juce::AudioProcessorValueTreeState::ParameterLayout SimpleEQAudioProcessor::crea
     // peek will have freq, gain, and bandwidth
 
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
+
     layout.add(std::make_unique<juce::AudioParameterFloat>("LowCutFreq", "LowCut Freq", juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f, 1.0f), 20.0f));
+
     // note: might be better practice to explicitly construct the unique pointer, then
     // use move semantics to move the unique pointer as the argument (e.g. using std::move)
     // however, since we explicitly created the unique pointer as the arg, move automatically happens
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>("HiCutFreq", "HighCut Freq", juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f, 1.0f), 20000.0f));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>("PeakFreq", "Peak Freq", juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f, 1.0f), 750.0f));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>("PeakGain", "Peak Gain", juce::NormalisableRange<float>(-24.0f, 24.0f, 0.1f, 1.0f), 0.0f));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>("PeakQ", "Peak Quality", juce::NormalisableRange<float>(0.1f, 10.0f, 0.05f, 1.0f), 1.0f));
+
+    // the math for slope of low/hi cut filters works out to be multiples of 12 db per octave
+    juce::StringArray stringArray;
+    for (int i = 0; i < 4; i++)
+    {
+        juce::String str;
+        str << (12 + i * 12);
+        str << " db/oct";
+        stringArray.add(str);
+    }
+    
+    layout.add(std::make_unique<juce::AudioParameterChoice>("LowCutSlope", "LowCut Slope", stringArray, 0));
+    layout.add(std::make_unique<juce::AudioParameterChoice>("HiCutSlope", "HighCut Slope", stringArray, 0));
         
     return layout;
 }
