@@ -184,6 +184,22 @@ void SimpleEQAudioProcessor::setStateInformation (const void* data, int sizeInBy
 }
 
 //==============================================================================
+juce::AudioProcessorValueTreeState::ParameterLayout SimpleEQAudioProcessor::createParameterLayout()
+{
+    // 3 EQ bands: Low cut, Hi cut, Peek
+    // cuts will have freq and slope ctrl
+    // peek will have freq, gain, and bandwidth
+
+    juce::AudioProcessorValueTreeState::ParameterLayout layout;
+    layout.add(std::make_unique<juce::AudioParameterFloat>("LowCutFreq", "LowCut Freq", juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f, 1.0f), 20.0f));
+    // note: might be better practice to explicitly construct the unique pointer, then
+    // use move semantics to move the unique pointer as the argument (e.g. using std::move)
+    // however, since we explicitly created the unique pointer as the arg, move automatically happens
+        
+    return layout;
+}
+
+//==============================================================================
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
