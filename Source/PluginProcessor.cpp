@@ -158,12 +158,24 @@ void SimpleEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
     // the samples and the outer loop is handling the channels.
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
+    //for (int channel = 0; channel < totalNumInputChannels; ++channel)
+    //{
+    //    auto* channelData = buffer.getWritePointer (channel);
 
-        // ..do something to the data...
-    }
+    //    // ..do something to the data...
+    //}
+
+    juce::dsp::AudioBlock<float> block(buffer);
+
+    auto leftBlock = block.getSingleChannelBlock(0);
+    auto rightBlock = block.getSingleChannelBlock(1);
+
+    juce::dsp::ProcessContextReplacing<float> leftContext(leftBlock);
+    juce::dsp::ProcessContextReplacing<float> rightContext(rightBlock);
+
+    leftChain.process(leftContext);
+    rightChain.process(rightContext);
+
 }
 
 //==============================================================================
