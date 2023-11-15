@@ -64,6 +64,14 @@ public:
     juce::AudioProcessorValueTreeState apvts{ *this, nullptr, "Parameters", createParameterLayout()};
 
 private:
+    using Filter = juce::dsp::IIR::Filter<float>;
+
+    using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>; // each filter can have a 12 db/oct slope, so having 4 gives us a 48 db/oct slope
+    using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>; // signal path for one channel
+
+    MonoChain leftChain, rightChain;
+
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleEQAudioProcessor)
 };
